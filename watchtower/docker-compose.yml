@@ -1,0 +1,26 @@
+version: "3"
+services:
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    environment:
+      - TZ=America/New York
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_SCHEDULE=0 0 * * *
+      # Discord webhook discord://token@channel where token is normally the second part of discord's URL
+      - WATCHTOWER_NOTIFICATION_URL=DISCORD_WEBHOOK
+      - WATCHTOWER_NOTIFICATIONS_LEVEL=debug
+      - WATCHTOWER_HTTP_API_METRICS=true
+      - WATCHTOWER_HTTP_API_TOKEN=YmyaKKj8azjy2M
+    ports:
+      - 8430:8080
+    labels:
+      - homepage.group=Monitoring
+      - homepage.name=Watchtower
+      - homepage.icon=watchtower.png
+      - homepage.description=A container-based solution for automating Docker container base image updates.
+      - homepage.widget.type=watchtower
+      - homepage.widget.url=URL
+      - homepage.widget.key=API_KEY

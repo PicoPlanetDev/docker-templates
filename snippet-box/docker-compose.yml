@@ -1,0 +1,23 @@
+version: '3'
+services:
+  snippet-box:
+    image: pawelmalak/snippet-box:latest
+    container_name: snippet-box
+    volumes:
+      - ./data:/app/data
+    ports:
+      - 5000:5000
+    restart: unless-stopped
+
+    labels:
+      - homepage.group=Applications
+      - homepage.name=Snippet Box
+      - homepage.icon=snippetbox.png
+      - homepage.href=URL
+      - homepage.description=Easily create, edit, browse and manage your snippets
+      - homepage.ping=URL
+
+networks:
+  default:
+    external: true
+    name: nginxproxymanager

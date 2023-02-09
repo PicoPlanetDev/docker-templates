@@ -1,0 +1,107 @@
+version: '2.2'
+services:
+  sharelatex:
+    restart: always
+    # A normal image must first be created, then texlive packages installed
+    # See this guide: https://github.com/overleaf/toolkit/blob/master/doc/ce-upgrading-texlive.md
+    image: sharelatex/sharelatex:with-texlive-full
+    container_name: sharelatex
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    ports:
+      - 8200:80
+      - 587:587
+    links:
+      - mongo
+      - redis
+    volumes:
+      - ./sharelatex_data:/var/lib/sharelatex
+
+    labels:
+      - homepage.group=Applications
+      - homepage.name=Overleaf
+      - homepage.icon=/icons/overleaf.png
+      - homepage.href=URL
+      - homepage.description=An open-source online real-time collaborative LaTeX editor.
+      - homepage.ping=URL
+
+    environment:
+      SHARELATEX_APP_NAME: Overleaf Community Edition
+
+      SHARELATEX_MONGO_URL: mongodb://sharelatex_mongo/sharelatex
+
+      # Same property, unfortunately with different names in
+      # different locations
+      SHARELATEX_REDIS_HOST: sharelatex_redis
+      REDIS_HOST: sharelatex_redis
+
+      ENABLED_LINKED_FILE_TYPES: 'project_file,project_output_file'
+
+      # Enables Thumbnail generation using ImageMagick
+      ENABLE_CONVERSIONS: 'true'
+
+      # Disables email confirmation requirement
+      EMAIL_CONFIRMATION_DISABLED: 'true'
+
+      # temporary fix for LuaLaTex compiles
+      # see https://github.com/overleaf/overleaf/issues/695
+      TEXMFVAR: /var/lib/sharelatex/tmp/texmf-var
+
+      ## Set for SSL via nginx-proxy
+      #VIRTUAL_HOST: 103.112.212.22
+
+      SHARELATEX_SITE_URL: URL
+      # SHARELATEX_NAV_TITLE: Our ShareLaTeX Instance
+      # SHARELATEX_HEADER_IMAGE_URL: http://somewhere.com/mylogo.png
+      SHARELATEX_ADMIN_EMAIL: EMAIL
+
+      #SHARELATEX_LEFT_FOOTER: '[{"text": "Powered by <a href=\"https://www.sharelatex.com\">ShareLaTeX</a> 2016"} ]'
+      SHARELATEX_RIGHT_FOOTER: '[{"text": "Hosted by FIRSTNAME LASTNAME"} ]'
+
+      SHARELATEX_EMAIL_FROM_ADDRESS: "SEND_EMAIL"
+
+      # SHARELATEX_EMAIL_AWS_SES_ACCESS_KEY_ID:
+      # SHARELATEX_EMAIL_AWS_SES_SECRET_KEY:
+
+      SHARELATEX_EMAIL_SMTP_HOST: smtp.gmail.com
+      SHARELATEX_EMAIL_SMTP_PORT: 587
+      SHARELATEX_EMAIL_SMTP_SECURE: false
+      SHARELATEX_EMAIL_SMTP_USER: EMAIL
+      SHARELATEX_EMAIL_SMTP_PASS: APP_PASSWORD
+
+      SHARELATEX_EMAIL_SMTP_TLS_REJECT_UNAUTH: true
+      SHARELATEX_EMAIL_SMTP_IGNORE_TLS: false
+      #SHARELATEX_EMAIL_SMTP_NAME: '127.0.0.1'
+      #SHARELATEX_EMAIL_SMTP_LOGGER: true
+      SHARELATEX_CUSTOM_EMAIL_FOOTER: "This system is run by FIRSTNAME LASTNAME."
+
+  mongo:
+    restart: always
+    image: mongo:4.4
+    container_name: sharelatex_mongo
+    expose:
+      - 27017
+    volumes:
+      - ./mongo_data:/data/db
+    healthcheck:
+      test: echo 'db.stats().ok' | mongo localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  redis:
+    restart: always
+    image: redis:5
+    container_name: sharelatex_redis
+    expose:
+      - 6379
+    volumes:
+      - ./redis_data:/data
+
+networks:
+  default:
+    external: true
+    name: nginxproxymanager

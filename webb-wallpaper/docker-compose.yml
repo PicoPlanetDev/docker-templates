@@ -1,0 +1,18 @@
+# TODO: fix build and image and all that
+version: "3"
+services:
+  app:
+    build: .
+    #image: "picoplanetdev/webb-wallpaper"
+    restart: unless-stopped
+    labels:
+      - homepage.group=Applications
+      - homepage.name=Webb Wallpaper
+      - homepage.icon=/icons/webb-wallpaper.png
+      - homepage.href=https://webb-wallpaper.tk
+      - homepage.description=Generate wallpapers from JWST images
+      - homepage.ping=https://webb-wallpaper.tk
+networks:
+  default:
+    external: true
+    name: nginxproxymanager

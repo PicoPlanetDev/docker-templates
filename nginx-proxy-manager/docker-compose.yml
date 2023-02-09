@@ -1,0 +1,32 @@
+version: "3"
+services:
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80' # Public HTTP Port
+      - '443:443' # Public HTTPS Port
+      - '81:81' # Admin Web Port
+      # Add any other Stream port you want to expose
+
+      # Uncomment this if IPv6 is not enabled on your host
+      # DISABLE_IPV6: 'true'
+
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+    labels:
+      - homepage.group=Tools
+      - homepage.name=Nginx Proxy Manager
+      - homepage.icon=nginxproxymanager.png
+      - homepage.href=URL
+      - homepage.description=Expose your services easily and securely
+      - homepage.widget.type=npm
+      - homepage.widget.url=URL
+      - homepage.widget.username=USERNAME
+      - homepage.widget.password=PASSWORD
+
+networks:
+  default:
+    external: true
+    name: nginxproxymanager

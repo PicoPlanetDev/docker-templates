@@ -1,0 +1,28 @@
+version: "3"
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    ports:
+      - 9443:9443
+    volumes:
+      - data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    labels:
+      - homepage.group=Tools
+      - homepage.name=Portainer
+      - homepage.icon=portainer.png
+      - homepage.href=URL
+      - homepage.description=Manage Docker containers, images, and more
+      - homepage.widget.type=portainer
+      - homepage.widget.url=URL
+      - homepage.widget.env=ENTER_ENV_NUMBER
+      - homepage.widget.key=ENTER_KEY
+volumes:
+  data:
+
+
+networks:
+  default:
+    external: true
+    name: nginxproxymanager

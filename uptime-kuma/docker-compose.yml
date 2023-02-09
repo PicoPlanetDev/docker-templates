@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  app:
+    container_name: uptime-kuma
+    image: louislam/uptime-kuma
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    # Homepage Uptime Kuma support coming soon...
+    labels:
+      - homepage.group=Monitoring
+      - homepage.name=Uptime Kuma
+      - homepage.icon=uptime-kuma.png
+      - homepage.href=URL
+      - homepage.description=A self-hosted monitoring tool
+
+networks:
+  default:
+    external: true
+    name: nginxproxymanager
