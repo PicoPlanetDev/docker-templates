@@ -1,0 +1,27 @@
+version: '3.3'
+services:
+  filebrowser:
+    volumes:
+      - '/DATAPATH:/srv'
+      # Special setup needs to be done to make this not be a directory
+      # I think you must create a blank file in that directory first
+      - './filebrowser/filebrowser.db:/database/filebrowser.db'
+    environment:
+      - PUID=1000
+      - PGID=1000
+    ports:
+      - '8090:80'
+    image: 'filebrowser/filebrowser:s6'
+    labels:
+      - homepage.group=Applications
+      - homepage.name=File Browser
+      - homepage.icon=filebrowser.png
+      - homepage.href=URL
+      - homepage.description=Manage and host your files
+      - homepage.ping=URL
+    restart: unless-stopped
+
+networks:
+  default:
+    external: true
+    name: nginxproxymanager
