@@ -1,0 +1,36 @@
+---
+version: "2.1"
+services:
+  nextcloud:
+    image: lscr.io/linuxserver/nextcloud:latest
+    container_name: nextcloud
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - ./nextcloud_config:/config
+      - /mnt/hddstorage/nextcloud/data:/data
+    ports:
+      - 1443:443
+    restart: unless-stopped
+    networks:
+      - frontend
+      - backend
+  
+  db:
+    image: postgres
+    restart: unless-stopped
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - backend
+
+networks:
+  frontend:
+    external: true
+    name: nginxproxymanager
+  backend:
+    driver: bridge
