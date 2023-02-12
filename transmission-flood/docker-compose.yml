@@ -1,0 +1,56 @@
+version: '3.7'
+services:
+  flood:
+    hostname: flood
+    image: jesec/flood
+    user: 0:0
+    restart: unless-stopped
+    command: --port 3001 --allowedpath /data
+    environment:
+      HOME: /config
+    volumes:
+      - ./flood-config:/config
+      - /mnt/hddstorage/transmission_data:/data
+    ports:
+      - 3002:3001
+    labels:
+      - homepage.group=Applications
+      - homepage.name=Flood
+      - homepage.icon=flood.png
+      - homepage.href=URL
+      - homepage.description=A monitoring service for various torrent clients
+      - homepage.ping=URL
+      - homepage.widget.type=flood
+      - homepage.widget.url=URL
+      - homepage.widget.username=USERNAME
+      - homepage.widget.password=PASSWORD
+    networks:
+      - frontend
+      - backend
+
+  transmission:
+    image: lscr.io/linuxserver/transmission:latest
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=America/New_York
+      - USER=${USER}
+      - PASS=${PASS}
+    volumes:
+      - ./transmission-config:/config
+      - /mnt/hddstorage/transmission_data:/downloads
+      - ./transmission-watch:/watch
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
+    restart: unless-stopped
+    networks:
+      - backend
+
+networks:
+  frontend:
+    external: true
+    name: nginxproxymanager
+  backend:
+    driver: bridge
