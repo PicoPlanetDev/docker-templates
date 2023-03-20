@@ -21,9 +21,9 @@ services:
       - homepage.group=Applications
       - homepage.name=Nextcloud
       - homepage.icon=nextcloud.png
-      - homepage.href=https://nextcloud.server.sigmondkukla.dev
-      - homepage.description=that cereal sludge did me in
-      - homepage.ping=https://nextcloud.server.sigmondkukla.dev
+      - homepage.href=URL
+      - homepage.description=DESCRIPTION
+      - homepage.ping=URL
   
   mariadb:
     image: mariadb

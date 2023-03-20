@@ -17,6 +17,13 @@ services:
     networks:
       - frontend
       - backend
+    labels:
+      - homepage.group=Applications
+      - homepage.name=Nextcloud
+      - homepage.icon=nextcloud.png
+      - homepage.href=URL
+      - homepage.description=DESCRIPTION
+      - homepage.ping=URL
   
   db:
     image: postgres
