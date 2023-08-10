@@ -1,0 +1,68 @@
+version: '3'
+services:
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - './monitor/prometheus:/etc/prometheus'
+      - 'prometheus_data:/prometheus'
+    command: '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - '9090:9090'
+    depends_on:
+      - telegraf
+    networks:
+      - backend
+      - frontend
+    labels:
+      - homepage.group=Monitoring
+      - homepage.name=Prometheus
+      - homepage.icon=prometheus.png
+      - homepage.href=URL
+      - homepage.description=The leading open-source monitoring solution
+      - homepage.widget.type=prometheus
+      - homepage.widget.url=URL
+    restart: unless-stopped
+      
+  telegraf:
+    image: picoplanetdev/telegraf-with-ipmitool
+    volumes:
+      - './monitor/telegraf:/etc/telegraf/'
+    ports:
+      - '9100:9100'
+    networks:
+      - backend
+    restart: unless-stopped
+      
+  grafana:
+    image: grafana/grafana
+    volumes:
+      - 'grafana_data:/var/lib/grafana'
+      - './monitor/grafana/grafana.ini:/etc/grafana/grafana.ini'
+    ports:
+      - '9200:3000'
+    depends_on:
+      - prometheus
+    networks:
+      - frontend
+      - backend
+    labels:
+      - homepage.group=Monitoring
+      - homepage.name=Grafana
+      - homepage.icon=grafana.png
+      - homepage.href=URL
+      - homepage.description=Operational dashboards for your data
+      - homepage.widget.type=grafana
+      - homepage.widget.url=URL
+      - homepage.widget.username=USERNAME
+      - homepage.widget.password=PASSWORD
+    restart: unless-stopped
+      
+networks:
+  frontend:
+    external: true
+    name: nginxproxymanager
+  backend:
+  
+volumes:
+  prometheus_data:
+  grafana_data:
