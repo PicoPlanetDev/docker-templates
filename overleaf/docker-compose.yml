@@ -4,7 +4,7 @@ services:
     restart: always
     # A normal image must first be created, then texlive packages installed
     # See this guide: https://github.com/overleaf/toolkit/blob/master/doc/ce-upgrading-texlive.md
-    image: sharelatex/sharelatex:with-texlive-full
+    image: sharelatex/sharelatex #:with-texlive-full
     container_name: sharelatex
     depends_on:
       mongo:
@@ -53,15 +53,15 @@ services:
       ## Set for SSL via nginx-proxy
       #VIRTUAL_HOST: 103.112.212.22
 
-      SHARELATEX_SITE_URL: URL
+      SHARELATEX_SITE_URL: ${SITE_URL}
       # SHARELATEX_NAV_TITLE: Our ShareLaTeX Instance
       # SHARELATEX_HEADER_IMAGE_URL: http://somewhere.com/mylogo.png
-      SHARELATEX_ADMIN_EMAIL: EMAIL
+      SHARELATEX_ADMIN_EMAIL: ${ADMIN_EMAIL}
 
       #SHARELATEX_LEFT_FOOTER: '[{"text": "Powered by <a href=\"https://www.sharelatex.com\">ShareLaTeX</a> 2016"} ]'
       SHARELATEX_RIGHT_FOOTER: '[{"text": "Hosted by FIRSTNAME LASTNAME"} ]'
 
-      SHARELATEX_EMAIL_FROM_ADDRESS: "SEND_EMAIL"
+      SHARELATEX_EMAIL_FROM_ADDRESS: "EMAIL_FROM"
 
       # SHARELATEX_EMAIL_AWS_SES_ACCESS_KEY_ID:
       # SHARELATEX_EMAIL_AWS_SES_SECRET_KEY:
@@ -69,8 +69,8 @@ services:
       SHARELATEX_EMAIL_SMTP_HOST: smtp.gmail.com
       SHARELATEX_EMAIL_SMTP_PORT: 587
       SHARELATEX_EMAIL_SMTP_SECURE: false
-      SHARELATEX_EMAIL_SMTP_USER: EMAIL
-      SHARELATEX_EMAIL_SMTP_PASS: APP_PASSWORD
+      SHARELATEX_EMAIL_SMTP_USER: ${SMTP_USER}
+      SHARELATEX_EMAIL_SMTP_PASS: ${SMTP_PASSWORD}
 
       SHARELATEX_EMAIL_SMTP_TLS_REJECT_UNAUTH: true
       SHARELATEX_EMAIL_SMTP_IGNORE_TLS: false
