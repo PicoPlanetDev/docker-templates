@@ -1,105 +1,173 @@
 version: '2.2'
 services:
-  sharelatex:
-    restart: always
-    # A normal image must first be created, then texlive packages installed
-    # See this guide: https://github.com/overleaf/toolkit/blob/master/doc/ce-upgrading-texlive.md
-    image: sharelatex/sharelatex #:with-texlive-full
-    container_name: sharelatex
-    depends_on:
-      mongo:
-        condition: service_healthy
-      redis:
-        condition: service_started
-    ports:
-      - 8200:80
-      - 587:587
-    links:
-      - mongo
-      - redis
-    volumes:
-      - ./sharelatex_data:/var/lib/sharelatex
+    sharelatex:
+        restart: always
+        # Server Pro users:
+        # image: quay.io/sharelatex/sharelatex-pro
 
-    labels:
-      - homepage.group=Applications
-      - homepage.name=Overleaf
-      - homepage.icon=/icons/overleaf.png
-      - homepage.href=URL
-      - homepage.description=An open-source online real-time collaborative LaTeX editor.
-      - homepage.ping=URL
+        # A normal image must first be created, then texlive packages installed
+        # See this guide: https://github.com/overleaf/toolkit/blob/master/doc/ce-upgrading-texlive.md
+        image: sharelatex/sharelatex
+        container_name: sharelatex
+        depends_on:
+            mongo:
+                condition: service_healthy
+            redis:
+                condition: service_started
+        ports:
+            - 8002:80
+        links:
+            - mongo
+            - redis
+        stop_grace_period: 60s
+        volumes:
+            - ./sharelatex_data:/var/lib/sharelatex
+            ########################################################################
+            ####  Server Pro: Uncomment the following line to mount the docker  ####
+            ####             socket, required for Sibling Containers to work    ####
+            ########################################################################
+            # - /var/run/docker.sock:/var/run/docker.sock
+        environment:
 
-    environment:
-      SHARELATEX_APP_NAME: Overleaf Community Edition
+            SHARELATEX_APP_NAME: Overleaf Community Edition
 
-      SHARELATEX_MONGO_URL: mongodb://sharelatex_mongo/sharelatex
+            SHARELATEX_MONGO_URL: mongodb://mongo/sharelatex
 
-      # Same property, unfortunately with different names in
-      # different locations
-      SHARELATEX_REDIS_HOST: sharelatex_redis
-      REDIS_HOST: sharelatex_redis
+            # Same property, unfortunately with different names in
+            # different locations
+            SHARELATEX_REDIS_HOST: redis
+            REDIS_HOST: redis
 
-      ENABLED_LINKED_FILE_TYPES: 'project_file,project_output_file'
+            ENABLED_LINKED_FILE_TYPES: 'project_file,project_output_file'
 
-      # Enables Thumbnail generation using ImageMagick
-      ENABLE_CONVERSIONS: 'true'
+            # Enables Thumbnail generation using ImageMagick
+            ENABLE_CONVERSIONS: 'true'
 
-      # Disables email confirmation requirement
-      EMAIL_CONFIRMATION_DISABLED: 'true'
+            # Disables email confirmation requirement
+            EMAIL_CONFIRMATION_DISABLED: 'true'
 
-      # temporary fix for LuaLaTex compiles
-      # see https://github.com/overleaf/overleaf/issues/695
-      TEXMFVAR: /var/lib/sharelatex/tmp/texmf-var
+            # temporary fix for LuaLaTex compiles
+            # see https://github.com/overleaf/overleaf/issues/695
+            TEXMFVAR: /var/lib/sharelatex/tmp/texmf-var
 
-      ## Set for SSL via nginx-proxy
-      #VIRTUAL_HOST: 103.112.212.22
+            ## Set for SSL via nginx-proxy
+            #VIRTUAL_HOST: 103.112.212.22
 
-      SHARELATEX_SITE_URL: ${SITE_URL}
-      # SHARELATEX_NAV_TITLE: Our ShareLaTeX Instance
-      # SHARELATEX_HEADER_IMAGE_URL: http://somewhere.com/mylogo.png
-      SHARELATEX_ADMIN_EMAIL: ${ADMIN_EMAIL}
+            SHARELATEX_SITE_URL: ${SITE_URL}
+            SHARELATEX_NAV_TITLE: Overleaf Community Edition
+            # SHARELATEX_HEADER_IMAGE_URL: http://somewhere.com/mylogo.png
+            SHARELATEX_ADMIN_EMAIL: ${ADMIN_EMAIL}
 
-      #SHARELATEX_LEFT_FOOTER: '[{"text": "Powered by <a href=\"https://www.sharelatex.com\">ShareLaTeX</a> 2016"} ]'
-      SHARELATEX_RIGHT_FOOTER: '[{"text": "Hosted by FIRSTNAME LASTNAME"} ]'
+            # SHARELATEX_LEFT_FOOTER: '[{"text": "Powered by <a href=\"https://www.sharelatex.com\">ShareLaTeX</a> 2016"},{"text": "Another page I want to link to can be found <a href=\"here\">here</a>"} ]'
+            SHARELATEX_RIGHT_FOOTER: '[{"text": "Hosted by FIRSTNAME LASTNAME"} ]'
 
-      SHARELATEX_EMAIL_FROM_ADDRESS: "EMAIL_FROM"
+            SHARELATEX_EMAIL_FROM_ADDRESS: "EMAILSFROMTHISADDRESS"
 
-      # SHARELATEX_EMAIL_AWS_SES_ACCESS_KEY_ID:
-      # SHARELATEX_EMAIL_AWS_SES_SECRET_KEY:
+            # SHARELATEX_EMAIL_AWS_SES_ACCESS_KEY_ID:
+            # SHARELATEX_EMAIL_AWS_SES_SECRET_KEY:
 
-      SHARELATEX_EMAIL_SMTP_HOST: smtp.gmail.com
-      SHARELATEX_EMAIL_SMTP_PORT: 587
-      SHARELATEX_EMAIL_SMTP_SECURE: false
-      SHARELATEX_EMAIL_SMTP_USER: ${SMTP_USER}
-      SHARELATEX_EMAIL_SMTP_PASS: ${SMTP_PASSWORD}
+            SHARELATEX_EMAIL_SMTP_HOST: smtp.gmail.com
+            SHARELATEX_EMAIL_SMTP_PORT: 587
+            # SHARELATEX_EMAIL_SMTP_SECURE: false
+            SHARELATEX_EMAIL_SMTP_USER: ${SMTP_USER}
+            SHARELATEX_EMAIL_SMTP_PASS: ${SMTP_PASS}
+            # SHARELATEX_EMAIL_SMTP_TLS_REJECT_UNAUTH: true
+            # SHARELATEX_EMAIL_SMTP_IGNORE_TLS: false
+            # SHARELATEX_EMAIL_SMTP_NAME: '127.0.0.1'
+            # SHARELATEX_EMAIL_SMTP_LOGGER: true
+            SHARELATEX_CUSTOM_EMAIL_FOOTER: "This system is run by Sigmond Kukla"
 
-      SHARELATEX_EMAIL_SMTP_TLS_REJECT_UNAUTH: true
-      SHARELATEX_EMAIL_SMTP_IGNORE_TLS: false
-      #SHARELATEX_EMAIL_SMTP_NAME: '127.0.0.1'
-      #SHARELATEX_EMAIL_SMTP_LOGGER: true
-      SHARELATEX_CUSTOM_EMAIL_FOOTER: "This system is run by FIRSTNAME LASTNAME."
+            # ENABLE_CRON_RESOURCE_DELETION: true
 
-  mongo:
-    restart: always
-    image: mongo:4.4
-    container_name: sharelatex_mongo
-    expose:
-      - 27017
-    volumes:
-      - ./mongo_data:/data/db
-    healthcheck:
-      test: echo 'db.stats().ok' | mongo localhost:27017/test --quiet
-      interval: 10s
-      timeout: 10s
-      retries: 5
+            ################
+            ## Server Pro ##
+            ################
 
-  redis:
-    restart: always
-    image: redis:5
-    container_name: sharelatex_redis
-    expose:
-      - 6379
-    volumes:
-      - ./redis_data:/data
+            # SANDBOXED_COMPILES: 'true'
+
+            # SANDBOXED_COMPILES_SIBLING_CONTAINERS: 'true'
+            # SANDBOXED_COMPILES_HOST_DIR: '/var/sharelatex_data/data/compiles'
+
+            # DOCKER_RUNNER: 'false'
+
+            ## Works with test LDAP server shown at bottom of docker compose
+            # SHARELATEX_LDAP_URL: 'ldap://ldap:389'
+            # SHARELATEX_LDAP_SEARCH_BASE: 'ou=people,dc=planetexpress,dc=com'
+            # SHARELATEX_LDAP_SEARCH_FILTER: '(uid={{username}})'
+            # SHARELATEX_LDAP_BIND_DN: 'cn=admin,dc=planetexpress,dc=com'
+            # SHARELATEX_LDAP_BIND_CREDENTIALS: 'GoodNewsEveryone'
+            # SHARELATEX_LDAP_EMAIL_ATT: 'mail'
+            # SHARELATEX_LDAP_NAME_ATT: 'cn'
+            # SHARELATEX_LDAP_LAST_NAME_ATT: 'sn'
+            # SHARELATEX_LDAP_UPDATE_USER_DETAILS_ON_LOGIN: 'true'
+
+            # SHARELATEX_TEMPLATES_USER_ID: "578773160210479700917ee5"
+            # SHARELATEX_NEW_PROJECT_TEMPLATE_LINKS: '[ {"name":"All Templates","url":"/templates/all"}]'
+
+
+            # SHARELATEX_PROXY_LEARN: "true"
+
+    mongo:
+        restart: always
+        image: mongo:4.4
+        container_name: mongo
+        expose:
+            - 27017
+        volumes:
+            - ./mongo_data:/data/db
+        healthcheck:
+            test: echo 'db.stats().ok' | mongo localhost:27017/test --quiet
+            interval: 10s
+            timeout: 10s
+            retries: 5
+        command: "--replSet overleaf"
+
+#    mongoinit:
+#      image: mongo:4.4
+#      # this container will exit after executing the command
+#      restart: "no"
+#      depends_on:
+#        mongo:
+#          condition: service_healthy
+#      entrypoint:
+#        [
+#          "mongo",
+#          "--host",
+#          "mongo:27017",
+#          "--eval",
+#          'rs.initiate({ _id: "overleaf", members: [ { _id: 0, host: "mongo:27017" } ] })',
+#        ]
+
+    redis:
+        restart: always
+        image: redis:6.2
+        container_name: redis
+        expose:
+            - 6379
+        volumes:
+            - ./redis_data:/data
+
+    # ldap:
+    #    restart: always
+    #    image: rroemhild/test-openldap
+    #    container_name: ldap
+    #    expose:
+    #        - 389
+
+    # See https://github.com/jwilder/nginx-proxy for documentation on how to configure the nginx-proxy container,
+    # and https://github.com/overleaf/overleaf/wiki/HTTPS-reverse-proxy-using-Nginx for an example of some recommended
+    # settings. We recommend using a properly managed nginx instance outside of the Overleaf Server Pro setup,
+    # but the example here can be used if you'd prefer to run everything with docker-compose
+
+    # nginx-proxy:
+    #     image: jwilder/nginx-proxy
+    #     container_name: nginx-proxy
+    #     ports:
+    #       #- "80:80"
+    #       - "443:443"
+    #     volumes:
+    #       - /var/run/docker.sock:/tmp/docker.sock:ro
+    #       - /home/sharelatex/tmp:/etc/nginx/certs
 
 networks:
   default:
