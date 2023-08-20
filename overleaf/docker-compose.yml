@@ -5,9 +5,9 @@ services:
         # Server Pro users:
         # image: quay.io/sharelatex/sharelatex-pro
 
-        # See https://github.com/overleaf/toolkit/blob/master/doc/ce-upgrading-texlive.md
-        # for info on installing texlive packages
-        image: sharelatex/sharelatex:with-texlive-full
+        # A normal image must first be created, then texlive packages installed
+        # See this guide: https://github.com/overleaf/toolkit/blob/master/doc/ce-upgrading-texlive.md
+        image: sharelatex/sharelatex
         container_name: sharelatex
         depends_on:
             mongo:
@@ -59,9 +59,9 @@ services:
             SHARELATEX_ADMIN_EMAIL: ${ADMIN_EMAIL}
 
             # SHARELATEX_LEFT_FOOTER: '[{"text": "Powered by <a href=\"https://www.sharelatex.com\">ShareLaTeX</a> 2016"},{"text": "Another page I want to link to can be found <a href=\"here\">here</a>"} ]'
-            SHARELATEX_RIGHT_FOOTER: '[{"text": "Hosted by Sigmond Kukla"} ]'
+            SHARELATEX_RIGHT_FOOTER: '[{"text": "Hosted by FIRSTNAME LASTNAME"} ]'
 
-            SHARELATEX_EMAIL_FROM_ADDRESS: "picoplanetdev@gmail.com"
+            SHARELATEX_EMAIL_FROM_ADDRESS: "EMAILSFROMTHISADDRESS"
 
             # SHARELATEX_EMAIL_AWS_SES_ACCESS_KEY_ID:
             # SHARELATEX_EMAIL_AWS_SES_SECRET_KEY:
